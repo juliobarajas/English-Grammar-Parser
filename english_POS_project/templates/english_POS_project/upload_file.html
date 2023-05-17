@@ -1,0 +1,31 @@
+<script>
+    let ctx = document.getElementById("chart").getContext("2d");
+    
+    let chart = new Chart(ctx, {
+      type: "bar",
+      data: {
+         labels: ["Sentences", "Words", "Spaces"],
+         datasets: [
+            {
+              label: "Data",
+              backgroundColor: "#79AEC8",
+              borderColor: "#417690",
+              data: [1,5,10]
+            }
+         ]
+      },
+      options: {
+        responsive: false,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        title: {
+          text: "English Parts of Speech",
+          display: true
+        }
+        
+      }
+    });
+    </script>

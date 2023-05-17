@@ -1,0 +1,219 @@
+<html>
+  <head>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap');
+      
+      *, body {
+          font-family: 'Poppins', sans-serif;
+          font-weight: 400;
+          -webkit-font-smoothing: antialiased;
+          text-rendering: optimizeLegibility;
+          -moz-osx-font-smoothing: grayscale;
+          text-align:center
+      }
+      
+      html, body {
+          height: 100%;
+          background-color: #152733;
+          overflow: hidden;
+      }
+      
+      
+      .form-holder {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+      }
+      
+      .form-holder .form-content {
+          position: relative;
+          text-align: center;
+          display: -webkit-box;
+          display: -moz-box;
+          display: -ms-flexbox;
+          display: -webkit-flex;
+          display: flex;
+          -webkit-justify-content: center;
+          justify-content: center;
+          -webkit-align-items: center;
+          align-items: center;
+          padding: 60px;
+      }
+      
+      .form-content .form-items {
+          border: 3px solid #fff;
+          padding: 40px;
+          display: inline-block;
+          width: 100%;
+          min-width: 540px;
+          -webkit-border-radius: 10px;
+          -moz-border-radius: 10px;
+          border-radius: 10px;
+          text-align: left;
+          -webkit-transition: all 0.4s ease;
+          transition: all 0.4s ease;
+      }
+      
+      .form-content h3 {
+          color: #fff;
+          text-align: left;
+          font-size: 28px;
+          font-weight: 600;
+          margin-bottom: 5px;
+      }
+      
+      .form-content h3.form-title {
+          margin-bottom: 30px;
+      }
+      
+      .form-content p {
+          color: #fff;
+          text-align: left;
+          font-size: 17px;
+          font-weight: 300;
+          line-height: 20px;
+          margin-bottom: 30px;
+      }
+      
+      
+      .form-content label, .was-validated .form-check-input:invalid~.form-check-label, .was-validated .form-check-input:valid~.form-check-label{
+          color: #fff;
+      }
+      
+      .form-content input[type=text], .form-content input[type=password], .form-content input[type=email], .form-content select {
+          width: 100%;
+          padding: 9px 20px;
+          text-align: left;
+          border: 0;
+          outline: 0;
+          border-radius: 6px;
+          background-color: #fff;
+          font-size: 15px;
+          font-weight: 300;
+          color: #8D8D8D;
+          -webkit-transition: all 0.3s ease;
+          transition: all 0.3s ease;
+          margin-top: 16px;
+      }
+      
+      
+      .btn-primary{
+          background-color: #6C757D;
+          outline: none;
+          border: 0px;
+           box-shadow: none;
+      }
+      
+      .btn-primary:hover, .btn-primary:focus, .btn-primary:active{
+          background-color: #495056;
+          outline: none !important;
+          border: none !important;
+           box-shadow: none;
+      }
+      
+      .form-content textarea {
+          position: static !important;
+          width: 100%;
+          padding: 8px 20px;
+          border-radius: 6px;
+          text-align: center;
+          background-color: #fff;
+          border: 0;
+          font-size: 15px;
+          font-weight: 300;
+          color: #8D8D8D;
+          outline: none;
+          resize: none;
+          height: 120px;
+          -webkit-transition: none;
+          transition: none;
+          margin-bottom: 14px;
+      }
+      
+      .form-content textarea:hover, .form-content textarea:focus {
+          border: 0;
+          background-color: #ebeff8;
+          color: #8D8D8D;
+      }
+      
+      .mv-up{
+          margin-top: -9px !important;
+          margin-bottom: 8px !important;
+      }
+      
+      .invalid-feedback{
+          color: #ff606e;
+      }
+      
+      .valid-feedback{
+         color: #2acc80;
+      }
+    </style>  
+
+  <body>
+  
+    <h1>Hello, {{ user.first_name |default:'Guest' }}</h1>
+
+    <p> Welcome to the Dashboard! Sign up or Sign in. To begin parsing your grammar hit the Upload a file or Enter Text buttons. Results may vary!</p>
+    <div>
+      {% if user.is_authenticated %}
+          <a href="{%url 'logout'%}">Logout</a>
+    
+      {% else %}
+          <a href="{% url 'signup' %}">Sign Up</a>
+          <a href="{% url 'login' %}">Login</a>
+      {% endif %}
+
+      
+    </div>
+  </body>
+</head>
+</html>
+<form method="POST" action="upload_file" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ file.as_p }}
+  <button type="submit" >Upload a File</button>
+</form>
+<form method="POST" action="submit_sentence">
+  {%csrf_token%}
+  {{ text.as_p }}
+  <button formaction="submit_sentence" type="submit" class = 'btn btn-secondary'>Enter Text</button>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+<canvas id="chart" height = "400" width="1350"></canvas>
+
+<script>
+let ctx = document.getElementById("chart").getContext("2d");
+
+let chart = new Chart(ctx, {
+  type: "bar",
+  data: {
+     labels: ["Sentences", "Words", "Spaces", "Pronouns", "Nouns", "Verbs", "Adverbs", "Adjectives", "Prepositions", "Punctuation"],
+     datasets: [
+        {
+          label: "Data",
+          backgroundColor: "#79AEC8",
+          borderColor: "#417690",
+          data: [{{num_of_sentences}},{{num_of_words}},{{num_of_spaces}},{{num_of_pronouns}},{{num_of_nouns}},{{num_of_verbs}},{{num_of_adverbs}},{{num_of_adjectives}},{{num_of_prepositions}},{{num_of_punctuation}}]
+        }
+     ]
+  },
+  options: {
+    responsive: false,
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    },
+    title: {
+      text: "English Parts of Speech Parser",
+      display: true
+    }
+    
+  }
+});
+</script>
