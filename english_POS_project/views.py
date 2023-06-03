@@ -26,64 +26,64 @@ def dashboard(request):
     return render(request, "english_POS_project/dashboard.html")
 
 
-class SignUpForm(UserCreationForm):
-    first_name = forms.CharField(max_length=12, min_length=4, required=True, help_text='Required: First Name \n',
-                                widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
-    last_name = forms.CharField(max_length=12, min_length=4, required=True, help_text='Required: Last Name',
-                               widget=(forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})))
-    email = forms.EmailField(max_length=50, help_text='Required. Inform a valid email address.',
-                             widget=(forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'})))
-    password1 = forms.CharField(label=('Password'),
-                                widget=(forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'})),
-                                help_text=password_validation.password_validators_help_text_html())
-    password2 = forms.CharField(label=('Password Confirmation'), widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'}),
-                                help_text=('Just Enter the same password, for confirmation'))
-    username = forms.CharField(
-        label=('Username'),
-        max_length=150,
-        help_text=('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.\n'),
-        validators=[username_validator],
-        error_messages={'unique': ("A user with that username already exists.")},
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'})
-    )
+# class SignUpForm(UserCreationForm):
+#     first_name = forms.CharField(max_length=12, min_length=4, required=True, help_text='Required: First Name \n',
+#                                 widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
+#     last_name = forms.CharField(max_length=12, min_length=4, required=True, help_text='Required: Last Name',
+#                                widget=(forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})))
+#     email = forms.EmailField(max_length=50, help_text='Required. Inform a valid email address.',
+#                              widget=(forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'})))
+#     password1 = forms.CharField(label=('Password'),
+#                                 widget=(forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'})),
+#                                 help_text=password_validation.password_validators_help_text_html())
+#     password2 = forms.CharField(label=('Password Confirmation'), widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'}),
+#                                 help_text=('Just Enter the same password, for confirmation'))
+#     username = forms.CharField(
+#         label=('Username'),
+#         max_length=150,
+#         help_text=('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.\n'),
+#         validators=[username_validator],
+#         error_messages={'unique': ("A user with that username already exists.")},
+#         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'})
+#     )
 
-    class Meta:
-        model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2',)
+#     class Meta:
+#         model = User
+#         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2',)
 
-class SignUp(CreateView):
-    form_class = SignUpForm
-    success_url = reverse_lazy("login")
-    template_name = "registration/signup.html"
+# class SignUp(CreateView):
+#     form_class = SignUpForm
+#     success_url = reverse_lazy("login")
+#     template_name = "registration/signup.html"
 
 
-def password_reset_request(request):
-	if request.method == "POST":
-		password_reset_form = PasswordResetForm(request.POST)
-		if password_reset_form.is_valid():
-			data = password_reset_form.cleaned_data['email']
-			associated_users = User.objects.filter(Q(email=data))
-			if associated_users.exists():
-				for user in associated_users:
-					subject = "Password Reset Requested"
-					email_template_name = "registration/password_reset_email.txt"
-					c = {
-					"email": user.email,
-					'domain':'127.0.0.1:8000',
-					'site_name': 'Website',
-					"uid": urlsafe_base64_encode(force_bytes(user.pk)),
-					"user": user,
-					'token': default_token_generator.make_token(user),
-					'protocol': 'http',
-					}
-					email = render_to_string(email_template_name, c)
-					try:
-						send_mail(subject, email, 'admin@example.com' , [user.email], fail_silently=False)
-					except BadHeaderError:
-						return HttpResponse('Invalid header found.')
-					return redirect ("/password_reset/done/")
-	password_reset_form = PasswordResetForm()
-	return render(request=request, template_name="registration/password_reset.html", context={"password_reset_form":password_reset_form})
+# def password_reset_request(request):
+# 	if request.method == "POST":
+# 		password_reset_form = PasswordResetForm(request.POST)
+# 		if password_reset_form.is_valid():
+# 			data = password_reset_form.cleaned_data['email']
+# 			associated_users = User.objects.filter(Q(email=data))
+# 			if associated_users.exists():
+# 				for user in associated_users:
+# 					subject = "Password Reset Requested"
+# 					email_template_name = "registration/password_reset_email.txt"
+# 					c = {
+# 					"email": user.email,
+# 					'domain':'127.0.0.1:8000',
+# 					'site_name': 'Website',
+# 					"uid": urlsafe_base64_encode(force_bytes(user.pk)),
+# 					"user": user,
+# 					'token': default_token_generator.make_token(user),
+# 					'protocol': 'http',
+# 					}
+# 					email = render_to_string(email_template_name, c)
+# 					try:
+# 						send_mail(subject, email, 'admin@example.com' , [user.email], fail_silently=False)
+# 					except BadHeaderError:
+# 						return HttpResponse('Invalid header found.')
+# 					return redirect ("/password_reset/done/")
+# 	password_reset_form = PasswordResetForm()
+# 	return render(request=request, template_name="registration/password_reset.html", context={"password_reset_form":password_reset_form})
 
 def POS_grammar(english):
 
