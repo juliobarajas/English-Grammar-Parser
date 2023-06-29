@@ -130,7 +130,7 @@ def upload_file(request):
             contents = f.read().decode("utf-8")
             print('valid')
             context = POS_grammar(contents)
-            return render(request, 'english_POS_project/dashboard.html', context)
+            return render(request, 'english_POS_project/dashboard.html', {'user_input': contents, **context})
         else:
             print('invalid')
     return render(request, 'english_POS_project/dashboard.html', {'file': form})
@@ -141,6 +141,6 @@ def submit_sentence(request):
         if form.is_valid():
             text = form.cleaned_data['user_input']
             context = POS_grammar(text)
-            return render(request, 'english_POS_project/dashboard.html', context)
+            return render(request, 'english_POS_project/dashboard.html', {'user_input': text, **context})
 
     return render(request, 'english_POS_project/dashboard.html', {'text': form})
