@@ -178,12 +178,16 @@ def POS_grammar(english):
     return(context)
 
 class UploadFileForm(forms.Form):
-    file = forms.FileField()
+    file = forms.FileField(required=True)
 
 
 class EnterInputForm(forms.Form):
-    user_input = forms.CharField()
-
+    user_input = forms.CharField(
+        required=True, 
+        label="Your Grammar",
+        error_messages={'required': 'Required'}
+)
+    
 def upload_file(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST,request.FILES)
@@ -206,3 +210,4 @@ def submit_sentence(request):
             return render(request, 'english_POS_project/dashboard.html', {'user_input': text, **context})
 
     return render(request, 'english_POS_project/dashboard.html', {'text': form})
+

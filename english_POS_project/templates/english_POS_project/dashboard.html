@@ -153,13 +153,14 @@
       .valid-feedback{
          color: #2acc80;
       }
+
     </style>  
 
   <body>
   
-    <h1>Hello, {{ user.first_name |default:'Guest' }}</h1>
+    <h1>English Grammar Parser</h1>
 
-    <p> Welcome to the Parser! To begin parsing your sentence or grammar click the Upload File or Enter Grammar button. Results may vary!</p>
+    <p> Welcome to the Parser! To begin parsing your sentence or grammar click the Upload File or Enter Grammar button. Results may vary!<br> NOTE: Contractions are broken apart and counted as separate words by the parser.</p>
     {% if user_input %}
     <p style="color:#417690;"><span style="color:#ff606e">Grammar Parsed: </span>{{ user_input }}</p>
     {% endif %}
@@ -171,7 +172,7 @@
   {{ file.as_p }}
   <button type="submit" >Upload File</button>
 </form>
-<form method="POST" action="submit_sentence">
+<form method="POST" action="{% url 'submit_sentence' %}">
   {%csrf_token%}
   {{ text.as_p }}
   <button formaction="submit_sentence" type="submit" class = 'btn btn-secondary'>Enter Grammar</button>
@@ -205,7 +206,7 @@ let chart = new Chart(ctx, {
       }
     },
     title: {
-      text: "English Parts of Speech Parser",
+      text: "English Grammar Parser",
       display: true
     }
     
