@@ -101,11 +101,12 @@ def POS_grammar(english):
     logging.info(print(tags))
 
     grammar = Grammar(r"""
-    sentence = (word / space / punctuation)+ additional_tags?
-    words = word+
+    grammar = (word / space / punctuation / ending_punctuation)+ additional_tags?
     word = noun / verb / pronoun / adverb / adjective / preposition / determinant / conjunction / interjection / symbol / number / particle / modal / possessive_ending / to /  existential / foreign / other
     space = ~" +"
-    
+    ending_punctuation = "." / "?" / "!"
+    punctuation = "," / ":" / "'" 
+                      
     noun = proper_plural_n / proper_singular_n / plural_n / singular_n
     singular_n = "NN"
     plural_n = "NNS"
@@ -155,7 +156,7 @@ def POS_grammar(english):
     existential = "EX" 
     foreign = "FW"          
     other = "X"
-    punctuation = "." / "," / ":" / "'" / "?" / "!" 
+     
     additional_tags = (~r".+")
 """)
 
@@ -163,9 +164,9 @@ def POS_grammar(english):
     my_grammar = grammar.parse(" ".join(tags))
     logging.info(print(my_grammar))
     context = { "parse_grammar": str(my_grammar),
-        "num_of_sentences": str(my_grammar).count("sentence"),
+        "num_of_sentences": str(my_grammar).count("ending_punctuation"),
         "num_of_words": str(my_grammar).count("word"),
-        "num_of_spaces": str(my_grammar).count("space"),
+        "num_of_spaces": str(my_grammar).count("space") - str(my_grammar).count("punctuation"),
         "num_of_pronouns": str(my_grammar).count("pronoun"),
         "num_of_nouns": str(my_grammar).count("noun"),
         "num_of_verbs": str(my_grammar).count("verb"),
