@@ -15,9 +15,14 @@
       }
       
       html, body {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
           height: 100%;
-          background-color: #f9fabb;
+          background-color: #272725;
           overflow: hidden;
+          color:#2acc80;
       }
       
       
@@ -106,14 +111,14 @@
           background-color: #6C757D;
           outline: none;
           border: 0px;
-           box-shadow: none;
+          box-shadow: none;
       }
       
       .btn-primary:hover, .btn-primary:focus, .btn-primary:active{
           background-color: #495056;
           outline: none !important;
           border: none !important;
-           box-shadow: none;
+          box-shadow: none;
       }
       
       .form-content textarea {
@@ -154,17 +159,17 @@
          color: #2acc80;
       }
 
+      form {
+        margin-top: 10px;
+      }
+
     </style>  
 
   <body>
-  
     <h1>English Grammar Parser</h1>
-
-    <p> Welcome to the Parser! To begin parsing your sentence or grammar click the Upload File or Enter Grammar button. Results may vary!<br> NOTE: Contractions are broken apart and counted as separate words by the parser.</p>
-    {% if user_input %}
-    <p style="color:#417690;"><span style="color:#ff606e">Grammar Parsed: </span>{{ user_input }}</p>
-    {% endif %}
+    <h5> Welcome to the Parser! To begin parsing your sentence or grammar click the Upload File or Enter Grammar button. Results may vary!<br><span style="color:#ff606e;"> NOTE:</span> <span style="color:#417690;">Contractions are broken apart and counted as separate words by the parser.</span></h5>
   </body>
+
 </head>
 </html>
 <form method="POST" action="upload_file" enctype="multipart/form-data">
@@ -173,43 +178,9 @@
   <button type="submit" >Upload File</button>
 </form>
 <form method="POST" action="{% url 'submit_sentence' %}">
-  {%csrf_token%}
+  {% csrf_token %}
   {{ text.as_p }}
   <button formaction="submit_sentence" type="submit" class = 'btn btn-secondary'>Enter Grammar</button>
 </form>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
-<canvas id="chart" height = "400" width="1350"></canvas>
 
-<script>
-
-let ctx = document.getElementById("chart").getContext("2d");
-
-let chart = new Chart(ctx, {
-  type: "bar",
-  data: {
-     labels: ["Sentences", "Words", "Spaces", "Pronouns", "Nouns", "Verbs", "Adverbs", "Adjectives", "Prepositions", "Punctuation"],
-     datasets: [
-        {
-          label: "Data",
-          backgroundColor: "#79AEC8",
-          borderColor: "#417690",
-          data: [{{num_of_sentences}},{{num_of_words}},{{num_of_spaces}},{{num_of_pronouns}},{{num_of_nouns}},{{num_of_verbs}},{{num_of_adverbs}},{{num_of_adjectives}},{{num_of_prepositions}},{{num_of_punctuation}}]
-        }
-     ]
-  },
-  options: {
-    responsive: false,
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    },
-    title: {
-      text: "English Grammar Parser",
-      display: true
-    }
-    
-  }
-});
-</script>
