@@ -19,6 +19,8 @@ from parsimonious.grammar import Grammar
 import english_POS_project
 import logging
 import nltk
+from nltk.tokenize import word_tokenize
+from nltk import pos_tag
 
 username_validator = UnicodeUsernameValidator()
 
@@ -88,16 +90,17 @@ def dashboard(request):
 # 	return render(request=request, template_name="registration/password_reset.html", context={"password_reset_form":password_reset_form})
 
 # Perform parts of speech tagging
-def pos_tagging(sentence):
+# Gathers only the needed tags and removes the words in the array.  
+def pos_tagging_tags(sentence):
     tokens = nltk.word_tokenize(sentence)
     tagged_words = nltk.pos_tag(tokens)
     tags = [tag for _, tag in tagged_words]
     return tags
 
-
+# Parses the grammar with parsimonious and NLTK 
 def POS_grammar(english):
 
-    tags = pos_tagging(english)
+    tags = pos_tagging_tags(english)
     logging.info(print(tags))
 
     grammar = Grammar(r"""
@@ -160,33 +163,40 @@ def POS_grammar(english):
     additional_tags = (~r".+")
 """)
 
-
+    # Prepares data for the Chart.js bar graph
     my_grammar = grammar.parse(" ".join(tags))
     logging.info(print(my_grammar))
     context = { "parse_grammar": str(my_grammar),
         "num_of_sentences": str(my_grammar).count("ending_punctuation"),
         "num_of_words": str(my_grammar).count("word"),
-        "num_of_spaces": str(my_grammar).count("space") - str(my_grammar).count("punctuation"),
+        "num_of_spaces": str(my_grammar).count("space") - str(my_grammar).count("punctuation") - str(my_grammar).count("'nt") - str(my_grammar).count("'ve"),
         "num_of_pronouns": str(my_grammar).count("pronoun"),
         "num_of_nouns": str(my_grammar).count("noun"),
         "num_of_verbs": str(my_grammar).count("verb"),
         "num_of_adverbs": str(my_grammar).count("adverb"),
         "num_of_adjectives": str(my_grammar).count("adjective"),
         "num_of_prepositions": str(my_grammar).count("preposition"),
+        "num_of_determiners": str(my_grammar).count("determinant"),
         "num_of_punctuation": str(my_grammar).count("punctuation")
     }
     return(context)
 
+# Form that user uploads .txt file into 
 class UploadFileForm(forms.Form):
-    file = forms.FileField(required=True)
+    file = forms.FileField(
+        required=True,
+        error_messages={'required': 'Only accepts .txt (text document) files'},    
+        label="Upload a .txt file"
+    )
 
-
+# Form user manually enters grammar into
 class EnterInputForm(forms.Form):
     user_input = forms.CharField(
         required= True, 
         label="Your Grammar",
-)
-    
+    )
+
+ # Handles request from upload file button    
 def upload_file(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST,request.FILES)
@@ -203,14 +213,93 @@ def upload_file(request):
     else:
         return render(request, 'english_POS_project/dashboard.html')
 
+# Handles both uploaded files, and manually entered grammar after pressing either button
 def submit_sentence(request):
+    nltk.download('help_tagsets')
     if request.method == 'POST':
         form = EnterInputForm(request.POST)
         if form.is_valid():
             text = form.cleaned_data['user_input']
+            tagged_words = pos_tag(word_tokenize(text))
+            
+            # Prepare a list of tuples with (word, pos_tag, full_name)
+            words_with_pos = []
+            # Match up tags with respective full part of speech
+            for word, pos in tagged_words:
+                if pos == 'NN':
+                 full_name = "Noun, common, singular or mass" 
+                elif pos == 'NNP':
+                    full_name = "Noun, proper, singular"
+                elif pos == 'NNS':
+                    full_name = "Noun, common, plural"
+                elif pos == 'VB':
+                    full_name = "Verb, base form" 
+                elif pos == 'VBD':
+                    full_name = "Verb, past tense"
+                elif pos == 'VBG':
+                    full_name = "Verb, present participle or gerund"
+                elif pos == 'VBN':
+                    full_name = "Verb, past participle"
+                elif pos == 'VBP':
+                    full_name = "Verb, present tense, not 3rd person singular"
+                elif pos == 'VBZ':
+                    full_name = "Verb, present tense, 3rd person singular"
+                elif pos == 'JJ':
+                    full_name = "Adjective or numeral, ordinal"
+                elif pos == 'JJR':
+                    full_name = "Adjective, comparative"
+                elif pos == 'JJS':
+                    full_name = "Adjective, superlative"
+                elif pos == 'CC':
+                    full_name = "Conjunction, coordinating" 
+                elif pos == 'CD':
+                    full_name = "Numeral, cardinal" 
+                elif pos == 'DT':
+                    full_name = "Determiner" 
+                elif pos == 'EX':
+                    full_name = "Existential there" 
+                elif pos == 'IN':
+                    full_name = "Preposition or conjunction, subordinating"   
+                elif pos == 'LS':
+                    full_name = "List item marker" 
+                elif pos == 'MD':
+                    full_name = "Modal auxiliary" 
+                elif pos == 'PDT':
+                    full_name = "Pre-determiner"  
+                elif pos == 'POS':
+                    full_name = "Genitive marker"  
+                elif pos == 'PRP':
+                    full_name = "Pronoun, personal" 
+                elif pos == 'PRP$':
+                    full_name = "pronoun, possessive" 
+                elif pos == 'RB':
+                    full_name = "Adverb" 
+                elif pos == 'RBR':
+                    full_name = "Adverb, comparative" 
+                elif pos == 'RBS':
+                    full_name = "Adverb, superlative" 
+                elif pos == 'RP':
+                    full_name = "Particle" 
+                elif pos == 'TO':
+                    full_name = "to as preposition or infinitive marker" 
+                elif pos == 'UH':
+                    full_name = "Interjection" 
+                elif pos == 'WDT':
+                    full_name = "WH-determiner" 
+                elif pos == 'WP':
+                    full_name = "WH-pronoun"  
+                elif pos == 'WRB':
+                    full_name = "WH-adverb"   
+                elif pos == '.':
+                    full_name = "Punctuation"    
+
+                words_with_pos.append((word, pos, full_name))  
+                   
+
             context = POS_grammar(text)
-            return render(request, 'english_POS_project/submit_sentence.html', {'user_input': text, **context})
+            return render(request, 'english_POS_project/submit_sentence.html', {'user_input': text, 'words_with_pos': words_with_pos, **context})
         return render(request, 'english_POS_project/dashboard.html', {'text': form})
     
     else: 
+        # Used when returning to the dashboard from the submit_sentence view
         return render(request, 'english_POS_project/dashboard.html')
