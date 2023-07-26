@@ -1,2 +1,2 @@
 # English-Grammar-Parser
-Website built using django, python, sqlite, and the parsimonus parser. Currently only supports limited amount of English words and parts of speech.
+Built using Django, Python, parsimonus parser, and NLTK. Supports almost all English words. Can manually enter english grammar or upload a .txt file. 
